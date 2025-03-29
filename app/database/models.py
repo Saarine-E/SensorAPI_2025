@@ -5,42 +5,62 @@ from typing import List
 
 ### Sensors
 class SensorIn(SQLModel):
-    sectionId: int = Field(index=True)
+    sectorName: str = Field(foreign_key="sector.name")
 
-class SensorOut(SensorIn, table=True):
+class Sensor(SensorIn, table=True):
     sensorId: int = Field(default=None, primary_key=True)
     hasError: bool = Field(default=False, index=True)
 
-    sensorSection: "Sector" = Relationship(back_populates="sectionSensors")
+    sensorSector: "Sector" = Relationship(back_populates="sectorSensors")
     sensorMeasurements: "Measurement" = Relationship(back_populates="measuringSensor")
     sensorErrorHistory: "ErrorHistory" = Relationship(back_populates="errorSensor")
 
 class SensorOutOne(BaseModel):
     sensorId: int
-    sectionId: int
+    sectorId: int
     hasError: bool
     measurements: List["Measurement"]
 
+class SensorOutBySector(BaseModel):
+    sensorId: int
+    hasError: bool
+    latestMeasurement: float
+    measurementTime: str
 
-### Sections
-class Sector(SQLModel, table=True):
-    sectionId: int = Field(default=None, primary_key=True)
+### Sectors
+class SectorIn(SQLModel):
+    pass
 
-    sectionSensors: List["SensorOut"] = Relationship(back_populates="sensorSection")
+class Sector(SectorIn, table=True):
+    sectorId: int = Field(default=None, primary_key=True)
+    name: str = Field(default=None, index=True)
 
+    sectorSensors: List["Sensor"] = Relationship(back_populates="sensorSector")
+
+class SectorOut(BaseModel):
+    sectorId: int
+    name: str
+    sensors: List["Sensor"]
+
+
+### Measurements
+class MeasurementIn(SQLModel):
+    datetime: str = Field(default=None, index=True)
+    temperature: float = Field(default=None)
+    sensorId: int = Field(foreign_key="sensor.sensorId")
+
+class Measurement(MeasurementIn, table=True):
+    measurementId: int = Field(default=None, primary_key=True)
+
+    measuringSensor: Sensor = Relationship(back_populates="sensorMeasurements")
 
 ### Other
-class Measurement(SQLModel, table=True):
-    datetime: str = Field(default=None, primary_key=True)
-    temperature: float = Field(default=None)
-
-    measuringSensor: SensorOut = Relationship(back_populates="sensorMeasurements")
-
 class ErrorHistory(SQLModel, table=True):
     datetime: str = Field(default=None, primary_key=True)
     errorMode: bool = Field(index=True)
+    sensorId: int = Field(foreign_key="sensor.sensorId")
 
-    errorSensor: "SensorOut" = Relationship(back_populates="sensorErrorHistory")
+    errorSensor: "Sensor" = Relationship(back_populates="sensorErrorHistory")
 
 class ErrorHistoryOut(BaseModel):
     datetime: str

@@ -1,17 +1,22 @@
 ## Endpointtien perustelut
 
-Endpointit on jaettu anturien (sensor) ja lohkojen (section) välille.
+Endpointit on jaettu sensorien (anturi) ja sektorien (lohko) välille. Nimeämiset erikoiset koska halusin tehdä työn englanniksi, enkä keksinyt järkevämpiä käännöksiä. Käytän tässä tekstissä anturin ja lohkon sijaan sensoria ja sektoria luettavuuden vuoksi.
 
-### Anturit
+### Sensorit
 - `/sensors/`
-  - Yksinkertaisesti palauttaa kaikki anturit.
-  - Sisältää query parametrin jolla voi suodattaa palautettavat anturit virhetilan mukaan.
+  - Yksinkertaisesti palauttaa kaikki sensorit.
+  - Sisältää query parametrin jolla voi suodattaa palautettavat sensorit virhetilan mukaan.
 - `/sensors/{sensorId}`
-  - Palauttaa yksittäisen anturin tiedot.
+  - Palauttaa yksittäisen sensorin tiedot.
   - Sisältää query parametrin palautettavien mitta-arvojen määrälle.
-- `/sensors/{sensorId}/statehistory`
-  - Palauttaa kaikki yksittäisen anturin tilamuutokset. Loogisesti laajennus ylläolevaan, koska tilamuutokset koskevat aina yksittäistä anturia.
+- `/sensors/{sensorId}/errorhistory`
+  - Palauttaa kaikki yksittäisen sensorin tilamuutokset. Loogisesti laajennus ylläolevaan, koska tilamuutokset koskevat aina yksittäistä sensoria.
+
+### Sektorit
+- `/sectors/{sectorId}`
+  - Palauttaa yksittäisen sektorin sensoreineen, ja näiden viimeisimmät mittaukset.
 
 ## Keinoälyjen käyttö
 
-28.3. Kysytty apua tietokantayhteyden ongelman ratkontaan (ongelma oli epähuomiossa lisätty `await` avainsana)
+28.3. Kysytty apua tietokantayhteyden ongelmanratkontaan. Ongelma oli epähuomiossa lisätty `await` avainsana, jota tekoälykään ei huomannut.
+29.3. Kysytty apua selvittämään miksi endpoint palauttaa nullia. Ongelma oli `return` avainsanan puuttuminen endpointista. Duh.
