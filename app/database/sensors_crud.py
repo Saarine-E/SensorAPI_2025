@@ -1,7 +1,8 @@
 from fastapi import status, HTTPException
 from sqlmodel import Session, select
-from ..database.models import SensorIn, Sensor, Sector, MeasurementIn, Measurement
+from ..database.models import SensorIn, Sensor, SensorOutOne, Sector, MeasurementIn, Measurement
 from ..database.sectors_crud import Create_Sector
+from sqlalchemy.orm import selectinload, contains_eager
 
 def Get_All_Sensors(session: Session, errorState: bool = None):
     query = select(Sensor) # Base query
@@ -29,8 +30,29 @@ def Add_Sensor(session: Session, sensorIn: SensorIn):
     session.refresh(sensor)
     return sensor
 
-def Get_Sensor(session: Session, sensorId: int, measurementCount: int = 10):
-    pass
+def Get_Sensor(session: Session, sensorId: int, measurementCount: int = 10, startDateTime: str = None, endDateTime: str = None):
+    
+    # Query the sensor
+    query = select(Sensor).where(Sensor.sensorId == sensorId)
+    sensor = session.exec(query).first()
+
+    if not sensor: 
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sensor not found")
+
+    # Query the events
+    msre_query = select(Measurement).where(Measurement.sensorId == sensorId)
+    if startDateTime and endDateTime: # If start and end are given, add the expression to the query
+        msre_query = msre_query.where(Measurement.datetime >= startDateTime, Measurement.datetime <= endDateTime)
+    msre_query = msre_query.limit(measurementCount)
+    measurements = session.exec(msre_query).all()
+
+    # Compose response model
+    return SensorOutOne(
+        sensorId=sensor.sensorId,
+        sectorId=sensor.sensorSector.sectorId,
+        hasError=sensor.hasError,
+        measurements=measurements
+    )
 
 def Get_Sensor_Error_History(session: Session, sensorId: int):
     pass
@@ -39,8 +61,10 @@ def Get_Sensor_Error_History(session: Session, sensorId: int):
 def New_Measurement(session: Session, measurementIn: MeasurementIn):
     sensor = session.exec(select(Sensor).where(Sensor.sensorId == measurementIn.sensorId)).first()
 
-    if sensor.hasError == True: # If the sensor is in an error state, refuse the measurement
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Cannot send measurements to a sensor that's in an error state")
+    if not sensor:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sensor not found")
+    if sensor.hasError == True:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Cannot send measurements from a sensor that's in an error state")
     
     measure = Measurement.model_validate(measurementIn)
     session.add(measure)

@@ -11,8 +11,8 @@ def Get_All_Sensors(errorState: bool = None, session: Session = Depends(get_sess
     return sensors_crud.Get_All_Sensors(session, errorState)
 
 @router.get("/{sensorId}", response_model=SensorOutOne)
-def Get_Sensor(sensorId: int, measurementCount: int = 10, session: Session = Depends(get_session)):
-    pass
+def Get_Sensor(sensorId: int, measurementCount: int = 10, startDateTime: str = None, endDateTime: str = None, session: Session = Depends(get_session)):
+    return sensors_crud.Get_Sensor(session, sensorId, measurementCount, startDateTime, endDateTime)
 
 @router.get("/{sensorId}/errorhistory", response_model=list[ErrorHistoryOut])
 def Get_Sensor_Error_History(sensorId: int, session: Session = Depends(get_session)):
