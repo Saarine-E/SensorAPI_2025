@@ -1,8 +1,9 @@
 from fastapi import status, HTTPException
 from sqlmodel import Session, select
-from ..database.models import SensorIn, Sensor, SensorOutOne, Sector, MeasurementIn, Measurement
+from ..database.models import SensorIn, Sensor, SensorOutOne, Sector, MeasurementIn, Measurement, ErrorHistory
 from ..database.sectors_crud import Create_Sector
 from sqlalchemy.orm import selectinload, contains_eager
+from datetime import datetime
 
 def Get_All_Sensors(session: Session, errorState: bool = None):
     query = select(Sensor) # Base query
@@ -71,3 +72,21 @@ def New_Measurement(session: Session, measurementIn: MeasurementIn):
     session.commit()
     session.refresh(measure)
     return measure
+
+def Change_Sensor_Error_State(session: Session, sensorId: int, newErrorState: bool = True):
+    sensor = session.exec(select(Sensor).where(Sensor.sensorId == sensorId)).first()
+    if not sensor:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sensor not found")
+    
+    sensor.hasError = newErrorState
+
+    timestamp = datetime.now().isoformat()
+
+    error = ErrorHistory(
+        sensorId = sensorId,
+        errorMode = newErrorState,
+        datetime = timestamp,
+        )
+
+    session.commit()
+    return True
