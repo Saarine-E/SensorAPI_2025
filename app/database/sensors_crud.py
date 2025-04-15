@@ -2,7 +2,7 @@ from fastapi import status, HTTPException
 from sqlmodel import Session, select
 from ..database.models import SensorIn, Sensor, SensorOutOne, Sector, MeasurementIn, Measurement, ErrorHistory
 from ..database.sectors_crud import Create_Sector
-from sqlalchemy.orm import selectinload, contains_eager
+from sqlalchemy import desc
 from datetime import datetime
 
 def Get_All_Sensors(session: Session, errorState: bool = None):
@@ -40,8 +40,8 @@ def Get_Sensor(session: Session, sensorId: int, measurementCount: int = 10, star
     if not sensor: 
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sensor not found")
 
-    # Query the events
-    msre_query = select(Measurement).where(Measurement.sensorId == sensorId)
+    # Query the measurements
+    msre_query = select(Measurement).where(Measurement.sensorId == sensorId).order_by(desc(Measurement.datetime))
     if startDateTime and endDateTime: # If start and end are given, add the expression to the query
         msre_query = msre_query.where(Measurement.datetime >= startDateTime, Measurement.datetime <= endDateTime)
     msre_query = msre_query.limit(measurementCount)
