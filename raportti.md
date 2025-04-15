@@ -5,19 +5,22 @@ Endpointit on jaettu sensorien (anturi) ja sektorien (lohko) välille. Nimeämis
 ### Sensorit
 - `/sensors/`
   - Yksinkertaisesti palauttaa kaikki sensorit.
-  - Sisältää query parametrin jolla voi suodattaa palautettavat sensorit virhetilan mukaan.
+  - Sisältää query parametrin jolla voi suodattaa sensorit virhetilan mukaan.
   
-- `/sensors/{sensorId}`
+- `POST /sensors/{sensorId}`
   - Palauttaa yksittäisen sensorin tiedot.
   - Sisältää query parametrit palautettavien mitta-arvojen määrälle ja aikavälille.
-  - CRUD-funktion queryissä kesti n. 4 tuntia saada aikaiseksi. Koitin saada ne toteutettua kerralla relationshippien kautta, mutta meni niin vaikeaksi että päädyin tekemään kaksi erillistä selectiä ja yhdistämään ne oikeanlaiseksi response modeliksi.
+  - CRUD-funktion queryissä kesti n. 4 tuntia saada aikaiseksi. Koitin saada ne toteutettua kerralla relationshippien kautta, mutta meni niin vaikeaksi että päädyin tekemään kaksi erillistä queryä ja yhdistämään ne oikeanlaiseksi response modeliksi.
+
+- `PATCH /sensors/{sensorId}`
+  - Vaihtaa yksittäisen sensorin vikatilaa. Vaihtaa sen oletukselta päälle, jotta sensorin ei tarvitse lähettää muuta kuin oma tunnisteensa.
 
 - `/sensors/{sensorId}/errorhistory`
-  - Palauttaa kaikki yksittäisen sensorin tilamuutokset. Loogisesti laajennus ylläolevaan, koska tilamuutokset koskevat aina yksittäistä sensoria.
+  - Palauttaa kaikki yksittäisen sensorin tilamuutokset.
 
 ### Sektorit
 - `/sectors/{sectorId}`
-  - Palauttaa yksittäisen sektorin sensoreineen, ja näiden viimeisimmät mittaukset.
+  - Palauttaa yksittäisen sektorin sensoreineen, ja sen viimeisimmät mittaukset.
 
 ## Keinoälyjen käyttö
 
