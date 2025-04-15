@@ -26,6 +26,6 @@ def Add_Sensor(sensorIn: SensorIn, session: Session = Depends(get_session)):
 def New_Measurement(measurementIn: MeasurementIn, session:Session = Depends(get_session)):
     return sensors_crud.New_Measurement(session, measurementIn)
 
-@router.patch("/{sensorId}/newErrorState", response_model=bool, status_code=status.HTTP_200_OK)
+@router.patch("/{sensorId}", response_model=bool, status_code=status.HTTP_200_OK)
 def Change_Sensor_Error_State(sensorId: int, newErrorState: bool = True, session: Session = Depends(get_session)):
     return sensors_crud.Change_Sensor_Error_State(session, sensorId, newErrorState)
