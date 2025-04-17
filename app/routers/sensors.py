@@ -22,10 +22,6 @@ def Get_Sensor_Error_History(sensorId: int, session: Session = Depends(get_sessi
 def Add_Sensor(sensorIn: SensorIn, session: Session = Depends(get_session)):
     return sensors_crud.Add_Sensor(session, sensorIn)
 
-@router.post("/measurement", response_model=Measurement, status_code=status.HTTP_201_CREATED)
-def New_Measurement(measurementIn: MeasurementIn, session:Session = Depends(get_session)):
-    return sensors_crud.New_Measurement(session, measurementIn)
-
 @router.patch("/{sensorId}", response_model=bool, status_code=status.HTTP_200_OK)
 def Change_Sensor_Error_State(sensorId: int, newErrorState: bool = True, session: Session = Depends(get_session)):
     return sensors_crud.Change_Sensor_Error_State(session, sensorId, newErrorState)
