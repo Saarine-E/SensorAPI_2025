@@ -37,6 +37,7 @@ class Sector(SectorIn, table=True):
     sectorSensors: List["Sensor"] = Relationship(back_populates="sensorSector")
 
 class SectorOut(BaseModel):
+    sectorId: int
     name: str
     sensors: List["SensorOutBySector"]
 
