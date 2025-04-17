@@ -10,10 +10,10 @@ router = APIRouter(prefix="/sectors", tags=["Sectors"])
 def Get_All_Sectors(session: Session = Depends(get_session)):
     return sectors_crud.Get_All_Sectors(session)
 
-@router.get("/{sectorId}", response_model=SectorOut)
+@router.get("/{sectorName}", response_model=SectorOut)
 def Get_Sector(sectorName: str, session: Session = Depends(get_session)):
     return sectors_crud.Get_Sector(session, sectorName)
 
 @router.post("/", response_model=Sector, status_code=status.HTTP_201_CREATED)
-def Create_Sector(session = Depends(get_session)):
-    return sectors_crud.Create_Sector(session)
+def Create_Sector(sectorName: str, session = Depends(get_session)):
+    return sectors_crud.Create_Sector(session, sectorName)
