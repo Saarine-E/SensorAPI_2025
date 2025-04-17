@@ -58,21 +58,6 @@ def Get_Sensor(session: Session, sensorId: int, measurementCount: int = 10, star
 def Get_Sensor_Error_History(session: Session, sensorId: int):
     pass
 
-
-def New_Measurement(session: Session, measurementIn: MeasurementIn):
-    sensor = session.exec(select(Sensor).where(Sensor.sensorId == measurementIn.sensorId)).first()
-
-    if not sensor:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sensor not found")
-    if sensor.hasError == True:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Cannot send measurements from a sensor that's in an error state")
-    
-    measure = Measurement.model_validate(measurementIn)
-    session.add(measure)
-    session.commit()
-    session.refresh(measure)
-    return measure
-
 def Change_Sensor_Error_State(session: Session, sensorId: int, newErrorState: bool = True):
     sensor = session.exec(select(Sensor).where(Sensor.sensorId == sensorId)).first()
     if not sensor:
