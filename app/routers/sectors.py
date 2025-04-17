@@ -6,14 +6,14 @@ from ..database import sectors_crud
 
 router = APIRouter(prefix="/sectors", tags=["Sectors"])
 
+@router.get("/", response_model=list[Sector])
+def Get_All_Sectors(session: Session = Depends(get_session)):
+    return sectors_crud.Get_All_Sectors(session)
+
 @router.get("/{sectorId}", response_model=SectorOut)
-def Get_Sector(sectorId: int, session: Session = Depends(get_session)):
-    pass
+def Get_Sector(sectorName: str, session: Session = Depends(get_session)):
+    return sectors_crud.Get_Sector(session, sectorName)
 
 @router.post("/", response_model=Sector, status_code=status.HTTP_201_CREATED)
 def Create_Sector(session = Depends(get_session)):
-    sectors_crud.Create_Sector(session)
-
-@router.delete("/", status_code=status.HTTP_200_OK)
-def Delete_Sector(sectorId: int, session = Depends(get_session)):
-    pass
+    return sectors_crud.Create_Sector(session)
