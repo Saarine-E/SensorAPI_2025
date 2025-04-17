@@ -24,8 +24,7 @@ class SensorOutOne(BaseModel):
 class SensorOutBySector(BaseModel):
     sensorId: int
     hasError: bool
-    latestMeasurement: float
-    measurementTime: str
+    latestMeasurement: "Measurement"
 
 ### Sectors
 class SectorIn(SQLModel):
@@ -38,19 +37,18 @@ class Sector(SectorIn, table=True):
     sectorSensors: List["Sensor"] = Relationship(back_populates="sensorSector")
 
 class SectorOut(BaseModel):
-    sectorId: int
     name: str
-    sensors: List["Sensor"]
+    sensors: List["SensorOutBySector"]
 
 
 ### Measurements
 class MeasurementIn(SQLModel):
-    datetime: str = Field(default=None, index=True)
     temperature: float = Field(default=None)
     sensorId: int = Field(foreign_key="sensor.sensorId")
 
 class Measurement(MeasurementIn, table=True):
     measurementId: int = Field(default=None, primary_key=True)
+    datetime: str = Field(default=None, index=True)
 
     measuringSensor: Sensor = Relationship(back_populates="sensorMeasurements")
 
