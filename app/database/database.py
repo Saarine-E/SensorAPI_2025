@@ -3,7 +3,8 @@ from sqlmodel import SQLModel, create_engine, Session
 
 database_filename= "sensorAPI"
 connect_args = {"check_same_thread":False}
-engine = create_engine(f"sqlite:///app/database/{database_filename}.db", echo=True, connect_args=connect_args)
+echoBool = False # Edit depending on if you need debug prints from sqlite
+engine = create_engine(f"sqlite:///app/database/{database_filename}.db", echo=echoBool, connect_args=connect_args)
 
 # Create database tables if they dont exist
 def create_db():
