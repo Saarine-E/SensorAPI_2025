@@ -31,6 +31,7 @@ def Get_Sector(session: Session, sectorName: str):
 
     return SectorOut(
         name=sector.name,
+        sectorId=sector.sectorId,
         sensors=sensorsOut
     )
 
