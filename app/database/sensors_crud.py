@@ -1,6 +1,6 @@
 from fastapi import status, HTTPException
 from sqlmodel import Session, select
-from ..database.models import SensorIn, Sensor, SensorOutOne, Sector, MeasurementIn, Measurement, ErrorHistory
+from ..database.models import SensorIn, Sensor, SensorOutOne, Sector, Measurement, ErrorHistory
 from ..database.sectors_crud import Create_Sector
 from sqlalchemy import desc
 from datetime import datetime
@@ -56,22 +56,46 @@ def Get_Sensor(session: Session, sensorId: int, measurementCount: int = 10, star
     )
 
 def Get_Sensor_Error_History(session: Session, sensorId: int):
-    pass
+    query = select(ErrorHistory).where(ErrorHistory.sensorId == sensorId).order_by(desc(ErrorHistory.datetime))
+    errors = session.exec(query).all()
+
+    if not errors:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No sensor or errors found")
+
+    return errors
 
 def Change_Sensor_Error_State(session: Session, sensorId: int, newErrorState: bool = True):
+    
+    # Query the sensor
     sensor = session.exec(select(Sensor).where(Sensor.sensorId == sensorId)).first()
     if not sensor:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sensor not found")
     
+    # Change error state to the given value
     sensor.hasError = newErrorState
 
+    # Create new ErrorHistory object
     timestamp = datetime.now().isoformat()
-
     error = ErrorHistory(
         sensorId = sensorId,
         errorMode = newErrorState,
         datetime = timestamp,
         )
 
+    # Commit the new ErrorHistory object and the change to the sensor
+    session.add(error)
     session.commit()
-    return True
+    session.refresh(error)
+
+    return error
+
+def Get_Error_History(session: Session):
+    print("Function triggered")
+    errors = session.exec(select(ErrorHistory)).all()
+
+    if not errors:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No error history found")
+
+    print(errors)
+    # return errors
+    return [e.model_dump() for e in errors]

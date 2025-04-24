@@ -26,6 +26,7 @@ class SensorOutBySector(BaseModel):
     hasError: bool
     latestMeasurement: "Measurement"
 
+
 ### Sectors
 class SectorIn(SQLModel):
     pass
@@ -53,14 +54,11 @@ class Measurement(MeasurementIn, table=True):
 
     measuringSensor: Sensor = Relationship(back_populates="sensorMeasurements")
 
-### Other
+
+### ErrorHistory
 class ErrorHistory(SQLModel, table=True):
     datetime: str = Field(default=None, primary_key=True)
     errorMode: bool = Field(index=True)
     sensorId: int = Field(foreign_key="sensor.sensorId")
 
     errorSensor: "Sensor" = Relationship(back_populates="sensorErrorHistory")
-
-class ErrorHistoryOut(BaseModel):
-    datetime: str
-    errorMode: bool
