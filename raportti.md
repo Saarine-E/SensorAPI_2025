@@ -1,8 +1,8 @@
 ## Käännökset
 
-Halusin tehdä työn englanniksi joten käänsin tehtävänannon anturit ja lohkot englanniksi `sector` ja `sensor`. Käytän tässä tekstissä näistä anturin ja lohkon sijaan sanoja sektori ja sensori, luettavuuden vuoksi koodin ja raportin välillä hyppiessä.
+Halusin tehdä työn englanniksi joten käänsin tehtävänannon anturit ja lohkot englanniksi `sector` ja `sensor`. Käytän tässä tekstissä anturin ja lohkon sijaan sanoja sektori ja sensori, luettavuuden vuoksi koodin ja raportin välillä hyppiessä.
 
-## Resurssit
+## Resurssit & Tietokantamallit
 
 - Sektorit
   - Sisältävät sensoreita.
@@ -10,9 +10,6 @@ Halusin tehdä työn englanniksi joten käänsin tehtävänannon anturit ja lohk
   - Sisältävät viittaukset sensorin mittauksiin ja virhehistoriaan.
 - Mittaukset (Measurements)
   - Lista mittaustuloksia.
-
-
-## Tietokantamalleista
 
 Alla on havainnollistava kaavio tietokannan relaatioista:
 ```
@@ -22,12 +19,12 @@ Sector
     └── ErrorHistory
 ```
 
-- En kohtele ErrorHistoryä resurssina, mutta sille on silti oma taulunsa joka on vain lista sensorien tilamuutoksia (virhetilaan tai siitä pois).
+- ErrorHistory on lista sensorien tilamuutoksia (virhetilaan tai siitä pois).
 - Osa endpointtien palauttamista malleista perii `BaseModel`, koska SQLModel ei tue `List`-muotoisia muuttujia joita tarvittiin tietojen palauttamiseen.
-- Sensorien mallissa päätin nimetä virhetilan  `hasError` jotta booleanit olisivat helpompia ymmärtää, vrt. "status" jossa truen ja falsen tarkoitus olisi epäselvä.
-- Päätin toteuttaa sektorit niin että niitä käpistellään pääasiassa nimen kautta, ei ID-numerolla. Tämä siksi että käyttäjän on mahdollista nimetä niitä alfanumeerisesti, eikä rajattuna pelkästään numeroihin. ID löytyy kyllä primary keynä tietokannasta relaatioita varten, ja se palautuu kaikki sektorit listatessa.
+- Sensorien mallissa päätin nimetä virhetilan `hasError` jotta booleanit olisivat helpompia ymmärtää, vrt. "status" jossa truen ja falsen tarkoitus olisi epäselvä.
+- Päätin toteuttaa sektorit niin että niitä käpistellään pääasiassa nimen kautta, ei ID-numerolla. Tämä siksi että käyttäjän on mahdollista nimetä niitä alfanumeerisesti, eikä rajattuna pelkästään numeroihin. ID löytyy kyllä primary keynä tietokannasta relaatioita varten, ja se palautuu kaikki sektorit listatessa käytettäväksi esim. frontendin element ID:issä.
 
-## Endpointeista
+## Endpointit
 
 Jätin työmäärän vähentämiseksi tietoisesti joitain endpointteja tekemättä jotka todennäköisesti oikeassa järjestelmässä olisivat, mutta joille ei oltu määritelty tehtävänannossa tarvetta. Esim. sektorien/sensorien uudelleennimeäminen/poistaminen, tai sensorien siirtäminen sektorista toiseen.
 
@@ -43,6 +40,7 @@ Jätin työmäärän vähentämiseksi tietoisesti joitain endpointteja tekemätt
 
 - `/sensors/errors`
   - Palauttaa listan kaikista virhetapahtumista. Sisältää tiedot jotka voi frontin puolella käsitellä graafiksi, tai vaikka muuntaa CSV-muotoon ja antaa käyttäjälle.
+  - Lajiteltu timestampin mukaan, uusin viimeisenä.
   
 - `GET /sensors/{sensorId}`
   - Palauttaa yksittäisen sensorin tiedot.
@@ -72,8 +70,11 @@ Jätin työmäärän vähentämiseksi tietoisesti joitain endpointteja tekemätt
 
 - `/sectors/{sectorName}`
   - Palauttaa yksittäisen sektorin sensoreineen, ja jokaisen viimeisimmät mittaukset.
+  - Hakee sektorin regexillä kirjoitusvirheiden varalta, ja mahdollistaa samalla hakemisen osittaisella nimellä.
 
 ## Keinoälyjen käyttö
 
-28.3. Kysytty apua tietokantayhteyden ongelmanratkontaan. Ongelma oli epähuomiossa lisätty `await` avainsana, jota tekoälykään ei huomannut ongelmaksi.
-29.3. Kysytty apua selvittämään miksi endpoint palauttaa nullia. Ongelma oli `return` avainsanan puuttuminen endpointista. Duh.
+- 28.3. Kysytty apua tietokantayhteyden ongelmanratkontaan.
+  - Ongelma oli epähuomiossa lisätty `await` avainsana, jota tekoälykään ei huomannut ongelmaksi.
+- 29.3. Kysytty apua selvittämään miksi endpoint palauttaa nullia.
+  - Ongelma oli `return` avainsanan puuttuminen endpointista. Duh.
