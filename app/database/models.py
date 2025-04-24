@@ -28,10 +28,7 @@ class SensorOutBySector(BaseModel):
 
 
 ### Sectors
-class SectorIn(SQLModel):
-    pass
-
-class Sector(SectorIn, table=True):
+class Sector(SQLModel, table=True):
     sectorId: int = Field(default=None, primary_key=True)
     name: str = Field(default=None, index=True)
 
