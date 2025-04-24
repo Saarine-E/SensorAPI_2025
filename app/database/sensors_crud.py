@@ -90,12 +90,10 @@ def Change_Sensor_Error_State(session: Session, sensorId: int, newErrorState: bo
     return error
 
 def Get_Error_History(session: Session):
-    print("Function triggered")
     errors = session.exec(select(ErrorHistory)).all()
 
     if not errors:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No error history found")
 
-    print(errors)
     # return errors
     return [e.model_dump() for e in errors]

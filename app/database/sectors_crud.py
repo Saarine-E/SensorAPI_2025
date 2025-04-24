@@ -27,8 +27,6 @@ def Get_Sector(session: Session, sectorName: str):
         latestMeasurement= Get_Latest_Measurement(session, s.sensorId)
     ) for s in sensors]
 
-    print(sensorsOut)
-
     return SectorOut(
         name=sector.name,
         sectorId=sector.sectorId,

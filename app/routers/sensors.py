@@ -16,7 +16,6 @@ def Add_Sensor(sensorIn: SensorIn, session: Session = Depends(get_session)):
 
 @router.get("/errors", response_model=list[ErrorHistory], status_code=status.HTTP_200_OK)
 def Get_Error_History(session: Session = Depends(get_session)):
-    print("asd")
     return sensors_crud.Get_Error_History(session)
 
 @router.get("/{sensorId}", response_model=SensorOutOne)
