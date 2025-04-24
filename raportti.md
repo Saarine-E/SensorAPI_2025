@@ -6,10 +6,15 @@ Halusin tehdä työn englanniksi joten käänsin tehtävänannon anturit ja lohk
 
 - Sektorit
   - Sisältävät sensoreita.
+  - Päätin toteuttaa sektorit niin että niitä käpistellään pääasiassa nimen kautta, ei ID-numerolla. Tämä siksi että käyttäjän on mahdollista nimetä niitä alfanumeerisesti, eikä rajattuna pelkästään numeroihin. ID löytyy kyllä primary keynä tietokannasta relaatioita varten, ja se palautuu kaikki sektorit listatessa käytettäväksi esim. frontendin element ID:issä.
+
 - Sensorit
-  - Sisältävät viittaukset sensorin mittauksiin ja virhehistoriaan.
+  - Sisältävät viittaukset mittauksiin ja virhehistoriaan.
+  - Sensorien mallissa päätin nimetä virhetilan `hasError` jotta booleanit olisivat helpompia ymmärtää, vrt. "status" jossa truen ja falsen tarkoitus olisi epäselvä.
+
 - Mittaukset (Measurements)
   - Lista mittaustuloksia.
+  - Tein näistä oman resurssinsa jotta sain jaettua koodia pienempiin paloihin.
 
 Alla on havainnollistava kaavio tietokannan relaatioista:
 ```
@@ -20,9 +25,9 @@ Sector
 ```
 
 - ErrorHistory on lista sensorien tilamuutoksia (virhetilaan tai siitä pois).
+  - En tehnyt näistä resurssia koska crud-funktioita ei ollut mahdollista irrottaa järkevästi sensorien crudista.
 - Osa endpointtien palauttamista malleista perii `BaseModel`, koska SQLModel ei tue `List`-muotoisia muuttujia joita tarvittiin tietojen palauttamiseen.
-- Sensorien mallissa päätin nimetä virhetilan `hasError` jotta booleanit olisivat helpompia ymmärtää, vrt. "status" jossa truen ja falsen tarkoitus olisi epäselvä.
-- Päätin toteuttaa sektorit niin että niitä käpistellään pääasiassa nimen kautta, ei ID-numerolla. Tämä siksi että käyttäjän on mahdollista nimetä niitä alfanumeerisesti, eikä rajattuna pelkästään numeroihin. ID löytyy kyllä primary keynä tietokannasta relaatioita varten, ja se palautuu kaikki sektorit listatessa käytettäväksi esim. frontendin element ID:issä.
+
 
 ## Endpointit
 
